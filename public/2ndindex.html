@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Collection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #ff6b6b;
+            --accent-hover: #ff5252;
+            --text-color: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Theme Options */
+        .theme-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            animation: fadeInDown 1s ease-out 0.5s both;
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .theme-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .theme-purple { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .theme-ocean { background: linear-gradient(135deg, #667eea, #2980b9); }
+        .theme-sunset { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
+        .theme-forest { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .theme-royal { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .theme-fire { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-screen.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .logo::before {
+            content: "👤";
+            font-size: 24px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .left-section {
+            animation: fadeInLeft 1s ease-out 0.3s both;
+        }
+
+        .right-section {
+            animation: fadeInRight 1s ease-out 0.3s both;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 24px;
+            line-height: 1.1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, var(--accent-color), var(--accent-hover));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(45deg, var(--accent-hover), #ff7979);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-link.linkedin:hover {
+            background: linear-gradient(45deg, #0077b5, #00a0dc);
+            border-color: #0077b5;
+        }
+
+        .social-link.github:hover {
+            background: linear-gradient(45deg, #333, #555);
+            border-color: #333;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .hero-image:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 40%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translate3d(0, -100%, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translate3d(-100%, 0, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translate3d(100%, 0, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            .hero-image {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .social-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Theme Selector -->
+    <div class="theme-selector">
+        <div class="theme-btn theme-purple active" onclick="changeTheme('purple')"></div>
+        <div class="theme-btn theme-ocean" onclick="changeTheme('ocean')"></div>
+        <div class="theme-btn theme-sunset" onclick="changeTheme('sunset')"></div>
+        <div class="theme-btn theme-forest" onclick="changeTheme('forest')"></div>
+        <div class="theme-btn theme-fire" onclick="changeTheme('fire')"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                AJIL P R
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="left-section">
+                <h1 class="title">Feedback Collection System</h1>
+                <p class="description">
+                    Feedback System is a responsive web application designed to collect, 
+                    manage, and display user feedback efficiently. It offers a clean and 
+                    intuitive interface for users to share their opinions, rate services, and 
+                    provide valuable suggestions.
+                </p>
+                
+                <button class="cta-button" onclick="handleCTAClick()">
+                    Click here to see
+                </button>
+
+                <div class="social-links">
+  <a href="https://linkedin.com/in/ajilpr" target="_blank" class="social-link linkedin" onclick="handleSocialClick(event, 'linkedin')">
+    <img src="linkedin.png" alt="LinkedIn" width="24" height="24" />
+    <span>LinkedIn</span>
+  </a>
+
+  <a href="https://github.com/Ajil017" target="_blank" class="social-link github" onclick="handleSocialClick(event, 'github')">
+    <img src="git.png" alt="GitHub" width="24" height="24" />
+    <span>GitHub</span>
+  </a>
+</div>
+
+            </div>
+
+            <div class="right-section">
+                <img src="C:\Users\rajup\OneDrive\Documents\feedback-system\Illustration 1.svg" 
+                     alt="Developer working on feedback system" 
+                     class="hero-image">
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Theme Configuration
+        const themes = {
+            purple: {
+                primary: '#667eea',
+                secondary: '#764ba2',
+                accent: '#ff6b6b',
+                accentHover: '#ff5252'
+            },
+            ocean: {
+                primary: '#667eea',
+                secondary: '#2980b9',
+                accent: '#3498db',
+                accentHover: '#2980b9'
+            },
+            sunset: {
+                primary: '#ff7e5f',
+                secondary: '#feb47b',
+                accent: '#ff6b6b',
+                accentHover: '#ff5252'
+            },
+            forest: {
+                primary: '#11998e',
+                secondary: '#38ef7d',
+                accent: '#27ae60',
+                accentHover: '#229954'
+            },
+            fire: {
+                primary: '#ff416c',
+                secondary: '#ff4b2b',
+                accent: '#e74c3c',
+                accentHover: '#c0392b'
+            }
+        };
+
+        // Theme Change Function
+        function changeTheme(themeName) {
+            const theme = themes[themeName];
+            const root = document.documentElement;
+            
+            root.style.setProperty('--primary-color', theme.primary);
+            root.style.setProperty('--secondary-color', theme.secondary);
+            root.style.setProperty('--accent-color', theme.accent);
+            root.style.setProperty('--accent-hover', theme.accentHover);
+            
+            // Update active theme button
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.theme-${themeName}`).classList.add('active');
+            
+            // Save theme preference
+            localStorage.setItem('preferredTheme', themeName);
+        }
+
+        // Loading Screen Functions
+        function showLoadingScreen(message = 'Loading...', duration = 2000) {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingText = document.querySelector('.loading-text');
+            const progressBar = document.getElementById('progressBar');
+            
+            loadingText.textContent = message;
+            loadingScreen.classList.add('active');
+            
+            // Animate progress bar
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        hideLoadingScreen();
+                    }, 500);
+                }
+            }, duration / 20);
+        }
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.classList.remove('active');
+        }
+
+        // CTA Button Handler
+        function handleCTAClick() {
+            // Add ripple effect
+            const button = event.target;
+            const ripple = document.createElement('span');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            // Add ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            button.style.position = 'relative';
+            button.style.overflow = 'hidden';
+            button.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+            
+setTimeout(() => {
+    // Navigate to the feedback system page
+    window.location.href = 'index.html';
+}, 2000);
+        }
+
+        // Social Media Handlers
+        function handleSocialClick(event, platform) {
+            event.preventDefault();
+            
+            const link = event.target.closest('.social-link');
+            link.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                link.style.transform = '';
+            }, 150);
+            
+            const messages = {
+                linkedin: 'Opening LinkedIn Profile...',
+                github: 'Opening GitHub Repository...'
+            };
+            
+            showLoadingScreen(messages[platform], 1500);
+            
+            setTimeout(() => {
+                // These will open the actual URLs specified in the href attributes
+                window.open(link.href, '_blank');
+            }, 1500);
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('preferredTheme') || 'purple';
+            changeTheme(savedTheme);
+        });
+
+        // Add smooth scrolling for any internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add intersection observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Add mouse movement parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            const floatingElements = document.querySelectorAll('.floating-element');
+            floatingElements.forEach((element, index) => {
+                const speed = (index + 1) * 0.5;
+                const x = (mouseX - 0.5) * speed;
+                const y = (mouseY - 0.5) * speed;
+                element.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

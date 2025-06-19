@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: url('background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .rating {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .star {
+            font-size: 30px;
+            color:rgb(121, 121, 121);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .star.active, .star:hover {
+            color:#ffc107;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .feedback-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .feedback-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .rating-display {
+            color: #ffc107;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Public Feedback Form -->
+        <div id="feedback-form" class="card">
+            <h1>📝 Share Your Feedback</h1>
+            <form id="feedbackForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div class="rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Share your thoughts..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Submit Feedback</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="nav-btn" onclick="showAdminLogin()">Admin Login</button>
+            </div>
+        </div>
+
+        <!-- Admin Login -->
+        <div id="admin-login" class="card hidden">
+            <h2>🔐 Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn">Login</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="nav-btn" onclick="showFeedbackForm()">Back to Feedback</button>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-dashboard" class="card hidden">
+            <h2>📊 Admin Dashboard</h2>
+            
+            <div class="admin-nav">
+                <button class="nav-btn active" onclick="showFeedback()">View Feedback</button>
+                <button class="nav-btn" onclick="logout()">Logout</button>
+            </div>
+            
+            <div id="feedback-list"></div>
+        </div>
+
+        <!-- Message Display -->
+        <div id="message-display"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let currentRating = 5;
+        let authToken = localStorage.getItem('adminToken') || '';
+
+        // Check if admin is already logged in
+        if (authToken) {
+            showAdminDashboard();
+        }
+
+        // Rating system
+     // Rating system
+const stars = document.querySelectorAll('.star');
+
+stars.forEach((star, index) => {
+    star.addEventListener('click', () => {
+        currentRating = index + 1;
+        updateStars();
+    });
+});
+
+function updateStars() {
+    stars.forEach((star, index) => {
+        if (index < currentRating) {
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+}
+
+        function updateStars() {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < currentRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // Initialize stars
+        updateStars();
+
+        // Feedback form submission
+        document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message'),
+                rating: currentRating
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/feedback`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Thank you for your feedback! 🎉', 'success');
+                    e.target.reset();
+                    currentRating = 5;
+                    updateStars();
+                } else {
+                    showMessage(result.error || 'Error submitting feedback', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        });
+
+        // Admin login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    authToken = result.token;
+                    localStorage.setItem('adminToken', authToken);
+                    showMessage('Login successful! 🎉', 'success');
+                    setTimeout(() => {
+                        showAdminDashboard();
+                    }, 1000);
+                } else {
+                    showMessage(result.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        });
+
+        // View functions
+        function showFeedbackForm() {
+            document.getElementById('feedback-form').classList.remove('hidden');
+            document.getElementById('admin-login').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+        }
+
+        function showAdminLogin() {
+            document.getElementById('feedback-form').classList.add('hidden');
+            document.getElementById('admin-login').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('feedback-form').classList.add('hidden');
+            document.getElementById('admin-login').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            loadFeedback();
+        }
+
+        function showFeedback() {
+            loadFeedback();
+        }
+
+        function logout() {
+            authToken = '';
+            localStorage.removeItem('adminToken');
+            showFeedbackForm();
+            showMessage('Logged out successfully', 'success');
+        }
+
+        // Load feedback (admin only)
+        async function loadFeedback() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/feedback`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const feedback = await response.json();
+                    displayFeedback(feedback);
+                } else {
+                    showMessage('Error loading feedback', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error loading feedback', 'error');
+            }
+        }
+
+        // Display feedback
+        function displayFeedback(feedbackList) {
+            const container = document.getElementById('feedback-list');
+            
+            if (feedbackList.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No feedback received yet.</p>';
+                return;
+            }
+
+            container.innerHTML = feedbackList.map(item => `
+                <div class="feedback-item">
+                    <div class="feedback-header">
+                        <div>
+                            <strong>${item.name}</strong> (${item.email})
+                            <div class="feedback-meta">
+                                ${new Date(item.createdAt).toLocaleString()}
+                                <span class="rating-display">${'⭐'.repeat(item.rating)}</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteFeedback('${item._id}')" style="margin: 0; padding: 5px 10px; font-size: 12px;">Delete</button>
+                    </div>
+                    <p>${item.message}</p>
+                </div>
+            `).join('');
+        }
+
+        // Delete feedback
+        async function deleteFeedback(id) {
+            if (!confirm('Are you sure you want to delete this feedback?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/feedback/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    showMessage('Feedback deleted successfully', 'success');
+                    loadFeedback();
+                } else {
+                    showMessage('Error deleting feedback', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error deleting feedback', 'error');
+            }
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message-display');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
