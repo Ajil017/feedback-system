@@ -60,27 +60,35 @@ A responsive, full-stack **Feedback Collection Web App** that enables users to s
 - MongoDB instance (local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
 - Git (for cloning)
 
-## 🛠️ Tech Stack
+### 📁 Project Structure
 
-| Layer        | Technology          |
-|--------------|---------------------|
-| Backend      | MONGODB                 |
-| Frontend     | HTML, CSS, JS       |
-| Database     | MySQL               |
-| Server       | Apache (XAMPP)      |
+├── index.html              # Landing page
+├── feedback.html           # Feedback and admin dashboard
+├── server.js               # Express server
+├── package.json            # Node dependencies
+├── .gitignore
+└── public/
+    ├── background.svg
+    ├── illustration.svg
+    ├── linkedin.png
+    └── git.png
 
----
 
-## 📁 Project Structure
+## 🌍 Deployment
+You can deploy this project using services like:
 
-feedback-system/
-│
-├── admin/                  # Admin panel (feedback management)
-├── student/                # Student dashboard
-├── config/                 # DB connection, constants
-├── css/                    # Stylesheets
-├── js/                     # Scripts
-├── images/                 # Static images/screenshots
-├── db_connection.php       # Database connection script
-├── index.php               # Login/landing page
-└── feedback.sql            # Database dump
+Railway
+
+Render
+
+Vercel (Frontend)
+
+Heroku
+
+## 📄 License
+This project is licensed under the MIT License.
+Feel free to fork, modify, and contribute!
+
+## 🙋‍♂️ Author
+Ajil P R
+LinkedIn • GitHub
