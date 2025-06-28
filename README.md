@@ -70,9 +70,6 @@ Incase the link is not working, you can see the working of this project through 
 └── public/
     ├── background.svg
     ├── illustration.svg
-    ├── linkedin.png
-    └── git.png
-
 
 ## 🌍 Deployment
 You can deploy this project using services like:
@@ -88,7 +85,3 @@ Heroku
 ## 📄 License
 This project is licensed under the MIT License.
 Feel free to fork, modify, and contribute!
-
-## 🙋‍♂️ Author
-Ajil P R
-LinkedIn • GitHub
