@@ -1,6 +1,6 @@
 # 📝 Feedback Collection System
 
-![Project Preview](./images/home.jpeg)
+![Project Preview](./images/home.png)
 
 A responsive, full-stack **Feedback Collection Web App** that enables users to submit feedback and allows admins to manage it securely. Built using **HTML, CSS, JavaScript, Node.js, Express, and MongoDB**, this system is perfect for collecting insights from users, customers, or clients.
 
