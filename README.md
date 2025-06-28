@@ -5,7 +5,6 @@
 A responsive, full-stack **Feedback Collection Web App** that enables users to submit feedback and allows admins to manage it securely. Built using **HTML, CSS, JavaScript, Node.js, Express, and MongoDB**, this system is perfect for collecting insights from users, customers, or clients.
 
 ---
-Incase the link is not working, you can see the working of this project through this youtube link : https://youtu.be/QOPErO9HTFM
 ## 🌟 Features
 
 ### ✅ User Interface
