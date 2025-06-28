@@ -38,7 +38,7 @@ A responsive, full-stack **Feedback Collection Web App** that enables users to s
 ## 🖼️ Screenshots
 
 ### 🎉 Landing Page
-![Landing Page](./images/home.jpeg)
+![Landing Page](./images/home.png)
 
 ### ✍️ Feedback Form
 ![Feedback Form](./images/feedback.jpeg)
